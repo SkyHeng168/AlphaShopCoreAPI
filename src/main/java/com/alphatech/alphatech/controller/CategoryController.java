@@ -1,6 +1,6 @@
 package com.alphatech.alphatech.controller;
 
-import com.alphatech.alphatech.Exception.ResourceNotFoundException;
+import com.alphatech.alphatech.Exception.customException.ResourceNotFoundException;
 import com.alphatech.alphatech.dto.categoryDto.CategoryRequest;
 import com.alphatech.alphatech.dto.categoryDto.CategoryRespond;
 import com.alphatech.alphatech.service.impl.CategoryService;

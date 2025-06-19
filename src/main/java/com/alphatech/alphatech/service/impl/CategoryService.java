@@ -1,6 +1,6 @@
 package com.alphatech.alphatech.service.impl;
 
-import com.alphatech.alphatech.Exception.ResourceNotFoundException;
+import com.alphatech.alphatech.Exception.customException.ResourceNotFoundException;
 import com.alphatech.alphatech.dto.categoryDto.CategoryRequest;
 import com.alphatech.alphatech.dto.categoryDto.CategoryRespond;
 import com.alphatech.alphatech.model.Category;
@@ -17,10 +17,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Slf4j

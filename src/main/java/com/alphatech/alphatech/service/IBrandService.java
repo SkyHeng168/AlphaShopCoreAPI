@@ -9,6 +9,7 @@ import java.util.List;
 public interface IBrandService {
     BrandRespond createBrand(BrandRequest brandRequest) throws IOException;
     List<BrandRespond> findAll();
+    BrandRespond getBrandById(Long id);
     BrandRespond updateBrand(Long id, BrandRequest brandRequest) throws IOException;
     void deleteBrand(Long id) throws IOException;
 

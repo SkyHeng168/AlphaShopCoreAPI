@@ -1,6 +1,6 @@
 package com.alphatech.alphatech.service.impl;
 
-import com.alphatech.alphatech.Exception.ResourceNotFoundException;
+import com.alphatech.alphatech.Exception.customException.ResourceNotFoundException;
 import com.alphatech.alphatech.dto.brandDto.BrandRequest;
 import com.alphatech.alphatech.dto.brandDto.BrandRespond;
 import com.alphatech.alphatech.model.Brand;
@@ -15,11 +15,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +44,13 @@ public class BrandService implements IBrandService {
         return brands.stream()
                 .map(BrandRespond::fromEntity)
                 .toList();
+    }
+
+    @Override
+    public BrandRespond getBrandById(Long id) {
+        Brand brand = brandRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Brand with id : " + id + "not found"));
+        return BrandRespond.fromEntity(brand);
     }
 
     @Override

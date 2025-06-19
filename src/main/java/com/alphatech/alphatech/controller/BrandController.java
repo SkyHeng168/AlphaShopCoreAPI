@@ -1,6 +1,6 @@
 package com.alphatech.alphatech.controller;
 
-import com.alphatech.alphatech.Exception.ResourceNotFoundException;
+import com.alphatech.alphatech.Exception.customException.ResourceNotFoundException;
 import com.alphatech.alphatech.dto.brandDto.BrandRequest;
 import com.alphatech.alphatech.dto.brandDto.BrandRespond;
 import com.alphatech.alphatech.service.impl.BrandService;
@@ -23,6 +23,16 @@ public class BrandController {
     public ResponseEntity<List<BrandRespond>> getAllBrands() {
         List<BrandRespond> brands = brandService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(brands);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BrandRespond> getBrandById(@PathVariable Long id){
+        try{
+            BrandRespond brand = brandService.getBrandById(id);
+            return ResponseEntity.status(HttpStatus.OK).body(brand);
+        }catch (ResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

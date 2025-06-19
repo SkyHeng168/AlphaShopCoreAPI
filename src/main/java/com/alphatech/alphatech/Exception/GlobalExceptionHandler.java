@@ -1,5 +1,7 @@
 package com.alphatech.alphatech.Exception;
 
+import com.alphatech.alphatech.Exception.customException.ResourceAlreadyExistsException;
+import com.alphatech.alphatech.Exception.customException.ResourceNotFoundException;
 import com.alphatech.alphatech.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,4 +21,15 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
+
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleResourceAlreadyExists(ResourceAlreadyExistsException ex) {
+        ErrorResponse error = new ErrorResponse(
+                ex.getMessage(),
+                LocalDateTime.now().toString(),
+                HttpStatus.CONFLICT.value()
+        );
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
 }
