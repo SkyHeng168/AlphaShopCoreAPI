@@ -1,9 +1,12 @@
 package com.alphatech.alphatech.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -34,6 +37,10 @@ public class Suppliers {
     @ManyToOne
     @JoinColumn(name = "country_code", referencedColumnName = "countryCode")
     private CountryTaxInfo countryTaxInfo;
+
+    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)  // Match the field name
+    @JsonManagedReference  // This should be on the "parent" side (Suppliers)
+    private List<DocumentContract> documentContracts = new ArrayList<>();
 
     @Column(updatable = false)
     private LocalDateTime createdDate;
