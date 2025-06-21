@@ -5,8 +5,10 @@ import com.alphatech.alphatech.Exception.customException.ResourceNotFoundExcepti
 import com.alphatech.alphatech.dto.SuppliersDto.SuppliersRequest;
 import com.alphatech.alphatech.dto.SuppliersDto.SuppliersRespond;
 import com.alphatech.alphatech.model.CountryTaxInfo;
+import com.alphatech.alphatech.model.Product;
 import com.alphatech.alphatech.model.Suppliers;
 import com.alphatech.alphatech.repository.CountryTaxInfoRepository;
+import com.alphatech.alphatech.repository.ProductRepository;
 import com.alphatech.alphatech.repository.SuppliersRepository;
 import com.alphatech.alphatech.service.ISuppliersService;
 import com.alphatech.alphatech.util.FileUploadUtil;
@@ -31,7 +33,7 @@ import java.util.List;
 public class SuppliersService implements ISuppliersService {
     private final SuppliersRepository suppliersRepository;
     private final CountryTaxInfoRepository countryTaxInfoRepository;
-
+    private final ProductRepository productRepository;
     @Override
     public List<SuppliersRespond> findAllSuppliers() {
         List<Suppliers> suppliersList = suppliersRepository.findAll();
@@ -44,7 +46,6 @@ public class SuppliersService implements ISuppliersService {
                 .map(SuppliersRespond::convertObjectToDto)
                 .toList();
     }
-
 
     @Override
     public SuppliersRespond createSuppliers(SuppliersRequest suppliersRequest) {
@@ -114,6 +115,10 @@ public class SuppliersService implements ISuppliersService {
             if (Files.exists(path)) {
                 Files.delete(path);
             }
+        }
+        for (Product product : suppliers.getProducts()) {
+            product.setSuppliers(null);
+            productRepository.save(product);
         }
         suppliersRepository.deleteById(id);
     }

@@ -1,6 +1,7 @@
 package com.alphatech.alphatech.dto.WareHouseDto;
 
 import com.alphatech.alphatech.enums.WareHouseStatus;
+import com.alphatech.alphatech.enums.WarehouseCapacityStatus;
 
 public record WareHouseRequest(
         String warehouseName,
@@ -10,6 +11,7 @@ public record WareHouseRequest(
         String  managerName,
         String  managerEmail,
         int capacity,
+        WarehouseCapacityStatus warehouseCapacityStatus,
         WareHouseStatus status,
         String note
 ) {

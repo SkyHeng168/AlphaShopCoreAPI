@@ -4,7 +4,12 @@ import com.alphatech.alphatech.Exception.customException.ResourceAlreadyExistsEx
 import com.alphatech.alphatech.Exception.customException.ResourceNotFoundException;
 import com.alphatech.alphatech.dto.WareHouseDto.WareHouseRequest;
 import com.alphatech.alphatech.dto.WareHouseDto.WareHouseRespond;
+import com.alphatech.alphatech.dto.WareHouseDto.WarehouseCapacityInfo;
+import com.alphatech.alphatech.enums.WarehouseCapacityStatus;
+import com.alphatech.alphatech.model.Product;
 import com.alphatech.alphatech.model.WareHouse;
+import com.alphatech.alphatech.repository.InventoryRepository;
+import com.alphatech.alphatech.repository.ProductRepository;
 import com.alphatech.alphatech.repository.WareHouseRepository;
 import com.alphatech.alphatech.service.IWareHouseService;
 import jakarta.transaction.Transactional;
@@ -22,6 +27,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WareHouseService implements IWareHouseService {
     private final WareHouseRepository wareHouseRepository;
+    private final ProductRepository productRepository;
+    private final InventoryRepository inventoryRepository;
 
     @Override
     public WareHouseRespond createWareHouse(WareHouseRequest wareHouseRequest) {
@@ -36,6 +43,7 @@ public class WareHouseService implements IWareHouseService {
                 .managerName(wareHouseRequest.managerName())
                 .managerEmail(wareHouseRequest.managerEmail())
                 .capacity(wareHouseRequest.capacity())
+                .warehouseCapacityStatus(wareHouseRequest.warehouseCapacityStatus())
                 .status(wareHouseRequest.status())
                 .note(wareHouseRequest.note())
                 .createdDate(LocalDateTime.now())
@@ -55,6 +63,55 @@ public class WareHouseService implements IWareHouseService {
                 .collect(Collectors.toList());
     }
 
+    public WarehouseCapacityStatus getCapacityStatus(Long warehouseId) {
+        WareHouse warehouse = wareHouseRepository.findById(warehouseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found with id: " + warehouseId));
+
+        int usedCapacity = inventoryRepository.sumQuantityByWareHouse(warehouseId);
+        int capacity = warehouse.getCapacity();
+
+        if (usedCapacity >= capacity) {
+            return WarehouseCapacityStatus.FULL;
+        } else if (usedCapacity >= capacity * 0.8) {
+            return WarehouseCapacityStatus.ALMOST_FULL;
+        } else {
+            return WarehouseCapacityStatus.NOT_FULL;
+        }
+    }
+
+    public double getUsagePercentage(Long warehouseId) {
+        WareHouse warehouse = wareHouseRepository.findById(warehouseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found with id: " + warehouseId));
+
+        int usedCapacity = inventoryRepository.sumQuantityByWareHouse(warehouseId);
+        int capacity = warehouse.getCapacity();
+
+        if (capacity == 0) return 0.0;
+
+        return (double) usedCapacity * 100 / capacity;
+    }
+
+    public WarehouseCapacityInfo getWarehouseCapacityInfo(Long warehouseId) {
+        WareHouse warehouse = wareHouseRepository.findById(warehouseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found with id: " + warehouseId));
+
+        int usedCapacity = inventoryRepository.sumQuantityByWareHouse(warehouseId);
+        int capacity = warehouse.getCapacity();
+        int availableCapacity = Math.max(capacity - usedCapacity, 0);
+
+        WarehouseCapacityStatus status = getCapacityStatus(warehouseId);
+        double usagePercentage = getUsagePercentage(warehouseId);
+
+        return new WarehouseCapacityInfo(
+                warehouseId,
+                capacity,
+                usedCapacity,
+                availableCapacity,
+                status,
+                Math.round(usagePercentage * 100.0) / 100.0 // round 2 decimals
+        );
+    }
+
     @Override
     public WareHouseRespond updateWareHouse(Long id, WareHouseRequest wareHouseRequest) {
         WareHouse wareHouse = wareHouseRepository.findById(id)
@@ -71,6 +128,7 @@ public class WareHouseService implements IWareHouseService {
         wareHouse.setManagerEmail(wareHouseRequest.managerEmail());
         wareHouse.setManagerEmail(wareHouseRequest.managerEmail());
         wareHouse.setCapacity(wareHouseRequest.capacity());
+        wareHouse.setWarehouseCapacityStatus(wareHouseRequest.warehouseCapacityStatus());
         wareHouse.setStatus(wareHouseRequest.status());
         wareHouse.setNote(wareHouseRequest.note());
         wareHouse.setUpdatedDate(LocalDateTime.now());
@@ -82,6 +140,10 @@ public class WareHouseService implements IWareHouseService {
     public void deleteWareHouse(Long id) {
         WareHouse wareHouse = wareHouseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found."));
+        for (Product product : wareHouse.getProducts()) {
+            product.setWareHouse(null);
+            productRepository.save(product);
+        }
         wareHouseRepository.delete(wareHouse);
     }
 }

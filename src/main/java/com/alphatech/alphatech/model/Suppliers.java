@@ -42,6 +42,10 @@ public class Suppliers {
     @JsonManagedReference  // This should be on the "parent" side (Suppliers)
     private List<DocumentContract> documentContracts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "suppliers", cascade = CascadeType.PERSIST)
+    @JsonManagedReference
+    private List<Product> products = new ArrayList<>();
+
     @Column(updatable = false)
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;

@@ -1,10 +1,14 @@
 package com.alphatech.alphatech.model;
 
 import com.alphatech.alphatech.enums.BrandStatus;
+import com.alphatech.alphatech.enums.ProductStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @ToString
@@ -27,6 +31,10 @@ public class Brand {
     private String country;
     @Enumerated(EnumType.STRING)
     private BrandStatus brandStatus;
+
+    @OneToMany(mappedBy = "brand", cascade = CascadeType.PERSIST)
+    @JsonBackReference
+    List<Product> products = new ArrayList<>();
 
     @Column(updatable = false)
     private LocalDateTime createdDate =  LocalDateTime.now();

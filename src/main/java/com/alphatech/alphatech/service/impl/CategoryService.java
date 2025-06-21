@@ -4,7 +4,9 @@ import com.alphatech.alphatech.Exception.customException.ResourceNotFoundExcepti
 import com.alphatech.alphatech.dto.categoryDto.CategoryRequest;
 import com.alphatech.alphatech.dto.categoryDto.CategoryRespond;
 import com.alphatech.alphatech.model.Category;
+import com.alphatech.alphatech.model.Product;
 import com.alphatech.alphatech.repository.CategoryRepository;
+import com.alphatech.alphatech.repository.ProductRepository;
 import com.alphatech.alphatech.service.ICategoryService;
 import com.alphatech.alphatech.util.FileUploadUtil;
 import jakarta.transaction.Transactional;
@@ -26,7 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryService implements ICategoryService {
     private final CategoryRepository categoryRepository;
-
+    private final ProductRepository productRepository;
     @Override
     public CategoryRespond createCategory(CategoryRequest categoryRequest) throws Exception {
         if (categoryRepository.existsCategoriesByCategoryNameIgnoreCase(categoryRequest.categoryName())) {
@@ -72,6 +74,10 @@ public class CategoryService implements ICategoryService {
             if (Files.exists(path)) {
                 Files.delete(path);
             }
+        }
+        for (Product product : category.getProducts()) {
+            product.setCategory(null);
+            productRepository.save(product);
         }
         categoryRepository.deleteById(id);
     }

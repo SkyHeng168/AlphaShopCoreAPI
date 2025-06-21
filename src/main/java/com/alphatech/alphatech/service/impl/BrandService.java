@@ -4,10 +4,14 @@ import com.alphatech.alphatech.Exception.customException.ResourceNotFoundExcepti
 import com.alphatech.alphatech.dto.brandDto.BrandRequest;
 import com.alphatech.alphatech.dto.brandDto.BrandRespond;
 import com.alphatech.alphatech.model.Brand;
+import com.alphatech.alphatech.model.Product;
 import com.alphatech.alphatech.repository.BrandRepository;
+import com.alphatech.alphatech.repository.ProductRepository;
 import com.alphatech.alphatech.service.IBrandService;
 import com.alphatech.alphatech.util.FileUploadUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,9 +25,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+@Transactional
 public class BrandService implements IBrandService {
     private final BrandRepository brandRepository;
-
+    private final ProductRepository productRepository;
     @Override
     public BrandRespond createBrand(BrandRequest brandRequest) throws IOException {
         if (brandRepository.existsByBrandNameIgnoreCase(brandRequest.brandName())) {
@@ -76,6 +82,10 @@ public class BrandService implements IBrandService {
             if (Files.exists(path)) {
                 Files.delete(path);
             }
+        }
+        for (Product product : brand.getProducts()) {
+            product.setBrand(null);
+            productRepository.save(product);
         }
         brandRepository.deleteById(id);
     }

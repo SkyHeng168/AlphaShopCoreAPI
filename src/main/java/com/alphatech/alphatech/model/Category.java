@@ -42,6 +42,10 @@ public class Category {
     @Enumerated(EnumType.STRING)
     private CategoryStatus categoryStatus;
 
+    @OneToMany(mappedBy = "category", cascade = CascadeType.PERSIST)
+    @JsonManagedReference
+    List<Product> products = new ArrayList<>();
+
     @Column(updatable = false)
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;

@@ -3,6 +3,7 @@ package com.alphatech.alphatech.Exception;
 import com.alphatech.alphatech.Exception.customException.FileStorageException;
 import com.alphatech.alphatech.Exception.customException.ResourceAlreadyExistsException;
 import com.alphatech.alphatech.Exception.customException.ResourceNotFoundException;
+import com.alphatech.alphatech.Exception.customException.WarehouseCapacityExceededException;
 import com.alphatech.alphatech.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -52,5 +55,15 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR.value()
         );
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(WarehouseCapacityExceededException.class)
+    public ResponseEntity<Map<String, Object>> handleWarehouseCapacityExceeded(WarehouseCapacityExceededException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("error", "Capacity Exceeded");
+        response.put("message", ex.getMessage());
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

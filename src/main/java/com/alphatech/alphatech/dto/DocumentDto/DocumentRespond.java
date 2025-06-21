@@ -6,6 +6,7 @@ import com.alphatech.alphatech.model.DocumentContract;
 import java.time.format.DateTimeFormatter;
 
 public record DocumentRespond(
+        Long Id,
         String documentName,
         String file,
         String fileType,
@@ -16,6 +17,7 @@ public record DocumentRespond(
     public static DocumentRespond toDocumentRespond(DocumentContract document) {
         DateTimeFormatter uploadDateformat = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm:ss a");
         return new DocumentRespond(
+                document.getId(),
                 document.getDocumentName(),
                 document.getFile(),
                 document.getFileType(),

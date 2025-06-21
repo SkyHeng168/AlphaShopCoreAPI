@@ -2,6 +2,7 @@ package com.alphatech.alphatech.controller;
 
 import com.alphatech.alphatech.dto.WareHouseDto.WareHouseRequest;
 import com.alphatech.alphatech.dto.WareHouseDto.WareHouseRespond;
+import com.alphatech.alphatech.dto.WareHouseDto.WarehouseCapacityInfo;
 import com.alphatech.alphatech.service.impl.WareHouseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,12 @@ public class WareHouseController {
     public ResponseEntity<List<WareHouseRespond>> getAllWareHouse() {
         List<WareHouseRespond> wareHouseResponds = wareHouseService.getAllWareHouse();
         return ResponseEntity.status(HttpStatus.OK).body(wareHouseResponds);
+    }
+
+    @GetMapping("/{id}/capacityStatus")
+    public ResponseEntity<WarehouseCapacityInfo> getCapacityStatus(@PathVariable Long id){
+        WarehouseCapacityInfo info = wareHouseService.getWarehouseCapacityInfo(id);
+        return ResponseEntity.ok(info);
     }
 
     @PutMapping("/{id}")

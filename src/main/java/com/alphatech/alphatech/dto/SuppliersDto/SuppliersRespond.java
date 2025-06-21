@@ -2,6 +2,7 @@ package com.alphatech.alphatech.dto.SuppliersDto;
 
 import com.alphatech.alphatech.dto.CountryTaxInfoDto.CountryTaxInfoRespond;
 import com.alphatech.alphatech.dto.DocumentDto.DocumentRespond;
+import com.alphatech.alphatech.dto.ProductDto.ProductRespond;
 import com.alphatech.alphatech.model.Suppliers;
 
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record SuppliersRespond(
+        Long id,
         String supplierName,
         String imageSupplier,
         String email,
@@ -21,10 +23,12 @@ public record SuppliersRespond(
         String contactPerson,
         LocalDateTime contractDate,
         CountryTaxInfoRespond countryTaxInfo,
-        List<DocumentRespond> documentContracts
+        List<DocumentRespond> documentContracts,
+        List<ProductRespond> product
 ) {
     public static SuppliersRespond convertObjectToDto(Suppliers supplier) {
         return new SuppliersRespond(
+                supplier.getId(),
                 supplier.getSupplierName(),
                 supplier.getImageSuppliers(),
                 supplier.getEmail(),
@@ -43,7 +47,12 @@ public record SuppliersRespond(
                         ? supplier.getDocumentContracts().stream()
                         .map(DocumentRespond::toDocumentRespond)
                         .collect(Collectors.toList())
-                        : null
+                        : null,
+                supplier.getProducts() != null
+                        ? supplier.getProducts().stream()
+                        .map(ProductRespond::convertEntityToDto)
+                        .collect(Collectors.toList())
+                        :null
         );
     }
 }
